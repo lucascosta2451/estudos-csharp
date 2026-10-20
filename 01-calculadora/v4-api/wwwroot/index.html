@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Calculadora</title>
+  <style>
+    body { font-family: sans-serif; max-width: 360px; margin: 40px auto; padding: 0 16px; }
+    input, button { width: 100%; padding: 10px; font-size: 1rem; margin-top: 8px; box-sizing: border-box; }
+    #resultado { margin-top: 16px; font-size: 1.3rem; }
+    .erro { color: #c00; }
+  </style>
+</head>
+<body>
+  <h1>Calculadora</h1>
+  <input id="expressao" placeholder="Ex.: 2*(3+4)" autofocus>
+  <button id="calcular">Calcular</button>
+  <div id="resultado"></div>
+
+  <script>
+    const campo = document.getElementById("expressao");
+    const saida = document.getElementById("resultado");
+
+    async function calcular() {
+      try {
+        const resposta = await fetch("/calcular", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ expressao: campo.value })
+        });
+        const dados = await resposta.json();
+
+        if (resposta.ok) {
+          saida.className = "";
+          saida.textContent = "Resultado: " + dados.resultado.toLocaleString("pt-BR");
+        } else {
+          saida.className = "erro";
+          saida.textContent = dados.erro;
+        }
+      } catch {
+        saida.className = "erro";
+        saida.textContent = "Não foi possível falar com a API";
+      }
+    }
+
+    document.getElementById("calcular").addEventListener("click", calcular);
+    campo.addEventListener("keydown", e => { if (e.key === "Enter") calcular(); });
+  </script>
+</body>
+</html>

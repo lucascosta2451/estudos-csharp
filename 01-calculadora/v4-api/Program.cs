@@ -1,5 +1,8 @@
 var app = WebApplication.CreateBuilder(args).Build();
 
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 app.MapPost("/calcular", (CalculoRequest req) =>
 {
     string texto = req.Expressao ?? "";
